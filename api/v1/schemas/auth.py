@@ -7,8 +7,7 @@ from api.v1.schemas.base_schema import BaseResponseModel
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: Optional[str] = None
-    first_name: Annotated[str, StringConstraints(max_length=70)]
-    last_name: Annotated[str, StringConstraints(max_length=70)]
+    username: Annotated[str, StringConstraints(max_length=70)]
 
 
 class LoginRequest(BaseModel):
@@ -27,8 +26,7 @@ class TokenRefreshResponse(BaseResponseModel):
 class AuthResponseData(BaseModel):
     id: str
     email: EmailStr
-    first_name: str
-    last_name: str
+    username: str
 
 
 class AuthResponse(BaseResponseModel):

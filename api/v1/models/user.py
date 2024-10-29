@@ -10,11 +10,7 @@ class User(BaseTableModel):
 
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=True)
-    first_name = Column(String)
-    last_name = Column(String)
-
-    profile = relationship("Profile", back_populates="user", uselist=False)
-    activity_logs = relationship("ActivityLog", back_populates="user")
+    username = Column(String, unique=True, nullable=True)
 
     def to_dict(self):
         obj_dict = super().to_dict()
