@@ -1,65 +1,114 @@
-# FastAPI Boilerplate
+# Task Management API
 
-## Setup
+## Table of Contents
 
-### Clone your repo
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Environment Variables](#environment-variables)
+    - [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+    - [Authentication](#authentication)
+    - [Task Endpoints](#task-endpoints)
+    - [Additional Features](#additional-features)
+- [Error Handling and Validation](#error-handling-and-validation)
+- [Scalability and Optimization](#scalability-and-optimization)
+- [Testing](#testing)
 
-- clone your repository after creating it with this template
+---
 
-### Start up the fastapi server
+## Project Overview
 
-- Create a virtual environment.
+This is a RESTful API built for a task management system that allows users to manage tasks, assign deadlines, and mark tasks as completed. It is built with Python and FastAPI, featuring robust error handling, authentication, and scalable design.
 
-```sh
-python3 -m venv .venv
-```
+## Features
 
-- Activate virtual environment.
+- User Authentication with JWT
+- CRUD operations for task management
+- Task assignment, tagging, and prioritization
+- Pagination and filtering options for large task lists
+- Secure handling of user data with comprehensive error management
 
-```sh
-source /path/to/venv/bin/activate`
-```
+## Getting Started
 
-- Install project dependencies `pip install -r requirements.txt`
+### Prerequisites
 
-- Create a .env file by copying the .env.sample file
+- **Python 3.8+**
+- **Database**: PostgreSQL
 
-`cp .env.sample .env`
+### Installation
 
-- Start server.
-
-```sh
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### Setup database
-
-To set up the database, follow the following steps:
-
-- **Create your local database**
-
+1. Clone the repository:
 ```bash
-sudo -u <user> psql
+git clone <repository-url> cd <repository-directory>
 ```
-
-```sql
-CREATE DATABASE database_name;
-```
-
-- **Making migrations**
-
+2. Set up a virtual environment and install dependencies:
 ```bash
-alembic revision --autogenerate -m 'initial migration'
-alembic upgrade head
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-- **Adding tables and columns to models**
-  After creating new tables, or adding new models. Make sure to run
+### Environment Variables
 
+Create a `.env` file with the following configuration:
+
+- `DATABASE_URL`: Database connection URL
+- `JWT_SECRET`: Secret key for JWT authentication
+- `PORT`: Port on which the server will run
+
+### Running the Application
+
+To start the server:
 ```bash
-alembic revision --autogenerate -m "Migration messge"
+uvicorn main:app --reload
 ```
 
-After creating new tables, or adding new models. Make sure you import the new model properly in th 'api/v1/models/**init**.py file
+## API Documentation
 
-After importing it in the init file, you don't need to import it in the /alembic/env.py file anymore
+### Authentication
+
+- **POST /users/register** - Register a new user
+- **POST /users/login** - Authenticate a user and receive a JWT token
+
+### Task Endpoints
+
+- **POST /tasks** - Create a new task
+- **GET /tasks** - Retrieve all tasks with pagination (e.g., `/tasks?page=1&limit=20`)
+- **GET /tasks/
+    
+    **- Retrieve a task by its ID
+- **PUT /tasks/
+    
+    **- Update a task by ID
+- **DELETE /tasks/
+    
+    **- Delete a task by ID
+
+### Additional Features
+
+- **Task Filtering** - Filter tasks by status, priority, or tags (e.g., `/tasks?status=pending&priority=high`)
+- **Task Sharing** - Share tasks with others using their email addresses
+
+## Error Handling and Validation
+
+This API includes robust error handling with detailed feedback for:
+
+- Invalid data inputs
+- Missing resources (e.g., task not found)
+- Unexpected server errors
+
+## Scalability and Optimization
+
+- **Pagination** on task listing endpoints for handling large numbers of tasks
+- **Database indexing** to improve performance on frequent queries (e.g., status or due date indexing)
+- **Optional Caching** using Redis for high-traffic data
+
+## Testing
+
+Unit tests are available for all endpoints. To run the tests:
+```bash
+pytest
+```
