@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import status, HTTPException
+from starlette.status import HTTP_200_OK
 
 from api.v1.models.user import User
 from api.v1.models.task import Task as TaskModel
@@ -40,10 +41,36 @@ def create(
         ) from e
 
     response_data = model_to_schema(new_task)
-
-    response_data = model_to_schema(new_task)
     return TaskSchema.CreateTaskResponse(
         status_code=status.HTTP_201_CREATED,
         detail="Task successfully created.",
+        data=response_data,
+    )
+
+
+def fetch(
+    db: Session, current_user: User, task_id: str
+) -> TaskSchema.TaskDetailResponse:
+    retrieved_task = db.get(entity=TaskModel, ident=task_id)
+
+    if not retrieved_task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found."
+        )
+
+    # check if task is related to current user
+    if (retrieved_task.created_by != current_user.id) and (
+        retrieved_task.assigned_to != current_user.email
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have access to this Task.",
+        )
+
+    response_data = model_to_schema(retrieved_task)
+
+    return TaskSchema.TaskDetailResponse(
+        status_code=HTTP_200_OK,
+        detail="Task successfully retrieved.",
         data=response_data,
     )
