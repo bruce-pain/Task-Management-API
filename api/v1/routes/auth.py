@@ -10,7 +10,7 @@ from api.v1.schemas import auth as auth_schema
 from api.v1.services import auth as auth_service
 from api.v1.models import User
 
-auth = APIRouter(prefix="/auth", tags=["Authentication"])
+auth = APIRouter(prefix="/users", tags=["Authentication"])
 
 
 @auth.post(
