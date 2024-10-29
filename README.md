@@ -77,15 +77,9 @@ uvicorn main:app --reload
 
 - **POST /tasks** - Create a new task
 - **GET /tasks** - Retrieve all tasks with pagination (e.g., `/tasks?page=1&limit=20`)
-- **GET /tasks/
-    
-    **- Retrieve a task by its ID
-- **PUT /tasks/
-    
-    **- Update a task by ID
-- **DELETE /tasks/
-    
-    **- Delete a task by ID
+- **GET /tasks/{id}** - Retrieve a task by its ID
+- **PUT /tasks/{id}** - Update a task by ID
+- **DELETE /tasks/{id}** - Delete a task by ID
 
 ### Additional Features
 
