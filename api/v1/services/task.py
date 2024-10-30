@@ -159,3 +159,32 @@ def update(
         detail="Task successfully updated.",
         data=response_data,
     )
+
+
+def delete(db: Session, current_user: User, task_id: str) -> None:
+    retrieved_task = (
+        db.query(TaskModel)
+        .filter(TaskModel.id == task_id)
+        .filter(
+            or_(
+                TaskModel.created_by == current_user.id,
+                TaskModel.assigned_to == current_user.email,
+            )
+        )
+        .first()
+    )
+
+    if not retrieved_task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found."
+        )
+
+    try:
+        db.delete(retrieved_task)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete task {e}",
+        ) from e

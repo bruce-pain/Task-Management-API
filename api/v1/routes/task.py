@@ -75,3 +75,18 @@ def update_task(
     task_id: str,
 ) -> TaskSchema.UpdateTaskResponse:
     return TaskService.update(db, current_user, task_id, schema)
+
+
+@task_router.delete(
+    path="/{task_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a task",
+    description="This endpoint deletes a task by ID",
+    tags=["Tasks"],
+)
+def delete_task(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+    task_id: str,
+) -> None:
+    TaskService.delete(db, current_user, task_id)
