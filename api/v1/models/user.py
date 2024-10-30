@@ -1,6 +1,6 @@
 """User data model"""
 
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 from api.v1.models.base_model import BaseTableModel
 
@@ -11,6 +11,8 @@ class User(BaseTableModel):
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=True)
     username = Column(String, unique=True, nullable=True)
+
+    tasks = relationship("Task", back_populates="creator")
 
     def to_dict(self):
         obj_dict = super().to_dict()

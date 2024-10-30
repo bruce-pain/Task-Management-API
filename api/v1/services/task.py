@@ -37,7 +37,7 @@ def create(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create task",
+            detail=f"Failed to create task {e}",
         ) from e
 
     response_data = model_to_schema(new_task)
