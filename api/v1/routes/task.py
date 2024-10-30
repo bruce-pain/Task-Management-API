@@ -14,7 +14,7 @@ task_router = APIRouter(prefix="/tasks", tags=["Tasks"])
 @task_router.post(
     path="",
     response_model=TaskSchema.CreateTaskResponse,
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_201_CREATED,
     summary="Create a new task",
     description="This endpoint creates a new task",
     tags=["Tasks"],
@@ -25,3 +25,19 @@ def create_task(
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> TaskSchema.CreateTaskResponse:
     return TaskService.create(db, schema, current_user)
+
+
+@task_router.get(
+    path="/{task_id}",
+    response_model=TaskSchema.TaskDetailResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Fetch a single task by id",
+    description="This endpoint fetches a single task by it's ID and returns the task details",
+    tags=["Tasks"],
+)
+def fetch_task_by_id(
+    task_id: str,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> TaskSchema.TaskDetailResponse:
+    return TaskService.fetch(db, current_user, task_id)

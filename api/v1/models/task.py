@@ -14,7 +14,7 @@ class Task(BaseTableModel):
     status = Column(String, nullable=False)
     priority = Column(String, nullable=True)
     created_by = Column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     assigned_to = Column(String, nullable=True)  # Email of the assigned user
     tags = Column(ARRAY(String), nullable=True)
