@@ -23,7 +23,7 @@ class CreateTask(BaseModel):
     description: Optional[str] = Field(
         None, description="A detailed description of the task"
     )
-    dueDate: datetime = Field(..., description="The date and time the task is due")
+    due_date: datetime = Field(..., description="The date and time the task is due")
     status: TaskStatus = Field(
         TaskStatus.PENDING, description="The current status of the task"
     )
@@ -104,6 +104,23 @@ class TaskBaseResponse(BaseModel):
         None, description="Email of the assigned user"
     )
     tags: Optional[List[str]] = Field(None, description="Tags associated with the task")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": "123e4567-e89b-12d3-a456-426614174000",
+                "title": "Finish documentation",
+                "description": "Complete the API documentation for the project",
+                "due_date": "2023-12-15T15:00:00Z",
+                "status": "pending",
+                "priority": "high",
+                "created_at": "2023-11-01T12:00:00Z",
+                "updated_at": "2023-11-05T14:00:00Z",
+                "created_by": "user-1234",
+                "assigned_to": "assignee@example.com",
+                "tags": ["documentation", "high-priority"],
+            }
+        }
 
 
 class ResponseWrapper(BaseModel):
