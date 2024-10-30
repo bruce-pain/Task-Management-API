@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import desc, or_
 from fastapi import status, HTTPException
 from starlette.status import HTTP_200_OK
 
@@ -51,20 +52,21 @@ def create(
 def fetch(
     db: Session, current_user: User, task_id: str
 ) -> TaskSchema.TaskDetailResponse:
-    retrieved_task = db.get(entity=TaskModel, ident=task_id)
+    retrieved_task = (
+        db.query(TaskModel)
+        .filter(TaskModel.id == task_id)
+        .filter(
+            or_(
+                TaskModel.created_by == current_user.id,
+                TaskModel.assigned_to == current_user.email,
+            )
+        )
+        .first()
+    )
 
     if not retrieved_task:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Task not found."
-        )
-
-    # check if task is related to current user
-    if (retrieved_task.created_by != current_user.id) and (
-        retrieved_task.assigned_to != current_user.email
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have access to this Task.",
         )
 
     response_data = model_to_schema(retrieved_task)
@@ -72,5 +74,43 @@ def fetch(
     return TaskSchema.TaskDetailResponse(
         status_code=HTTP_200_OK,
         detail="Task successfully retrieved.",
+        data=response_data,
+    )
+
+
+def fetch_list(
+    db: Session, current_user: User, page: int, limit: int
+) -> TaskSchema.TaskListResponse:
+    # get all tasks related to current_user
+    all_tasks = db.query(TaskModel).filter(
+        or_(
+            TaskModel.created_by == current_user.id,
+            TaskModel.assigned_to == current_user.email,
+        )
+    )
+
+    total_tasks: int = all_tasks.count()
+    total_pages: int = int(total_tasks / limit) + (total_tasks % limit > 0)
+
+    paginated_tasks = (
+        all_tasks.order_by(desc(TaskModel.created_by))
+        .limit(limit)
+        .offset((page - 1) * limit)
+        .all()
+    )
+
+    task_list = [model_to_schema(task) for task in paginated_tasks]
+
+    response_data = TaskSchema.TaskListData(
+        tasks=task_list,
+        total=total_tasks,
+        totalPages=total_pages,
+        page=page,
+        limit=limit,
+    )
+
+    return TaskSchema.TaskListResponse(
+        status_code=status.HTTP_200_OK,
+        detail="Tasks successfully retrieved.",
         data=response_data,
     )

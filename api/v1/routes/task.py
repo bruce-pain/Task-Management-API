@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, Query, status, Depends
 from sqlalchemy.orm import Session
 
 from api.db.database import get_db
@@ -41,3 +41,20 @@ def fetch_task_by_id(
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> TaskSchema.TaskDetailResponse:
     return TaskService.fetch(db, current_user, task_id)
+
+
+@task_router.get(
+    path="",
+    response_model=TaskSchema.TaskListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Fetch all tasks",
+    description="This endpoint fetches a paginated list of all tasks related to the current user",
+    tags=["Tasks"],
+)
+def fetch_all_tasks(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+    page: int = 1,
+    limit: int = 10,
+) -> TaskSchema.TaskListResponse:
+    return TaskService.fetch_list(db, current_user, page, limit)

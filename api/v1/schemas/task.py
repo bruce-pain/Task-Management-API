@@ -1,3 +1,4 @@
+from fastapi.openapi.models import Example
 from pydantic import BaseModel, Field, EmailStr, StringConstraints
 from typing import Optional, List, Annotated, Union
 from datetime import datetime
@@ -182,20 +183,34 @@ class TaskDetailResponse(ResponseWrapper):
         }
 
 
+class TaskListData(BaseModel):
+    total: int = Field(..., description="Total number of tasks")
+    totalPages: int = Field(..., description="Total number of pages")
+    page: int = Field(..., description="current page")
+    limit: int = Field(..., description="number of tasks per page")
+    tasks: List[TaskBaseResponse] = Field(..., description="List of tasks")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "total": 100,
+                "totalPages": 10,
+                "page": 1,
+                "limit": 10,
+                "tasks": [TaskBaseResponse.Config.schema_extra["example"]],
+            }
+        }
+
+
 # Response for a list of tasks
 class TaskListResponse(ResponseWrapper):
-    data: dict = Field(..., description="Paginated list of tasks")
+    data: TaskListData = Field(..., description="Paginated list of tasks")
 
     class Config:
         schema_extra = {
             "example": {
                 "status_code": 200,
                 "detail": "Tasks retrieved successfully.",
-                "data": {
-                    "tasks": [TaskBaseResponse.Config.schema_extra["example"]],
-                    "total": 100,
-                    "page": 1,
-                    "limit": 10,
-                },
+                "data": TaskListData.Config.schema_extra["example"],
             }
         }
