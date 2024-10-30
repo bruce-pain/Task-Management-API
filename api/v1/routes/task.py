@@ -58,3 +58,20 @@ def fetch_all_tasks(
     limit: int = 10,
 ) -> TaskSchema.TaskListResponse:
     return TaskService.fetch_list(db, current_user, page, limit)
+
+
+@task_router.patch(
+    path="/{task_id}",
+    response_model=TaskSchema.UpdateTaskResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Update a task",
+    description="This endpoint updates a task by ID",
+    tags=["Tasks"],
+)
+def update_task(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+    schema: TaskSchema.UpdateTask,
+    task_id: str,
+) -> TaskSchema.UpdateTaskResponse:
+    return TaskService.update(db, current_user, task_id, schema)

@@ -114,3 +114,48 @@ def fetch_list(
         detail="Tasks successfully retrieved.",
         data=response_data,
     )
+
+
+def update(
+    db: Session, current_user: User, task_id: str, schema: TaskSchema.UpdateTask
+) -> TaskSchema.UpdateTaskResponse:
+    retrieved_task = (
+        db.query(TaskModel)
+        .filter(TaskModel.id == task_id)
+        .filter(
+            or_(
+                TaskModel.created_by == current_user.id,
+                TaskModel.assigned_to == current_user.email,
+            )
+        )
+        .first()
+    )
+
+    if not retrieved_task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found."
+        )
+
+    update_data = schema.model_dump(exclude_unset=True)
+
+    # replace task data with updated data
+    for key, value in update_data.items():
+        setattr(retrieved_task, key, value)
+
+    try:
+        db.commit()
+        db.refresh(retrieved_task)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update task {e}",
+        ) from e
+
+    response_data = model_to_schema(retrieved_task)
+
+    return TaskSchema.UpdateTaskResponse(
+        status_code=status.HTTP_200_OK,
+        detail="Task successfully updated.",
+        data=response_data,
+    )
