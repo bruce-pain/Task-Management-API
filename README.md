@@ -15,7 +15,7 @@
     - [Additional Features](#additional-features)
 - [Error Handling and Validation](#error-handling-and-validation)
 - [Scalability and Optimization](#scalability-and-optimization)
-- [Testing](#testing)
+<!-- - [Testing](#testing) -->
 
 ---
 
@@ -42,7 +42,8 @@ This is a RESTful API built for a task management system that allows users to ma
 
 1. Clone the repository:
 ```bash
-git clone <repository-url> cd <repository-directory>
+git clone https://github.com/bruce-pain/Task-Management-API
+cd Task-Management-API
 ```
 2. Set up a virtual environment and install dependencies:
 ```bash
@@ -50,23 +51,31 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+### Database
+Create a PostgreSQL database locally or use a live database (like Supabase)
 
 ### Environment Variables
 
-Create a `.env` file with the following configuration:
+Create a `.env` file with the configuration defined in `.env.sample`
 
-- `DATABASE_URL`: Database connection URL
-- `JWT_SECRET`: Secret key for JWT authentication
-- `PORT`: Port on which the server will run
+### Migrations
+Before running the application, you should make a migration
+
+```bash
+alembic revision --autogenerate -m 'initial migration'
+alembic upgrade head
+```
 
 ### Running the Application
 
 To start the server:
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## API Documentation
+
+Full API Documentation (local): [https://localhost:8000/docs](https://localhost:8000/docs)
 
 ### Authentication
 
@@ -83,8 +92,8 @@ uvicorn main:app --reload
 
 ### Additional Features
 
-- **Task Filtering** - Filter tasks by status, priority, or tags (e.g., `/tasks?status=pending&priority=high`)
-- **Task Sharing** - Share tasks with others using their email addresses
+- [ ] **Task Filtering** - Filter tasks by status, priority, or tags (e.g., `/tasks?status=pending&priority=high`)
+- [ ] **Task Sharing** - Share tasks with others using their email addresses
 
 ## Error Handling and Validation
 
@@ -96,13 +105,14 @@ This API includes robust error handling with detailed feedback for:
 
 ## Scalability and Optimization
 
-- **Pagination** on task listing endpoints for handling large numbers of tasks
-- **Database indexing** to improve performance on frequent queries (e.g., status or due date indexing)
-- **Optional Caching** using Redis for high-traffic data
+- [x] **Pagination** on task listing endpoints for handling large numbers of tasks
+- [x] **Database indexing** to improve performance on frequent queries (e.g., status or due date indexing)
+- [ ] **Optional Caching** using Redis for high-traffic data
 
-## Testing
+<!-- ## Testing -->
+<!---->
+<!-- Unit tests are available for all endpoints. To run the tests: -->
+<!-- ```bash -->
+<!-- pytest -->
+<!-- ``` -->
 
-Unit tests are available for all endpoints. To run the tests:
-```bash
-pytest
-```
